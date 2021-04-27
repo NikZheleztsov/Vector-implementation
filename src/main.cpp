@@ -33,7 +33,7 @@ int main ()
     std::cout << "v_3 max_size(): " << v_3.max_size() << std::endl;
     auto it_1 = v_0.begin(), it_2 = it_1 + 3;
     // [first, last) !
-    v_3.insert(0, it_1, it_2);
+    // v_3.insert(0, it_1, it_2);
     std::cout << "v_3 (insert (iterators)): \n";
     for (auto x : v_3)
         std::cout << x << ' ';
