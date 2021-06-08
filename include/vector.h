@@ -76,7 +76,7 @@ public:
     iterator insert( const_iterator pos, size_type count, const T& value);
     template <class InputIt, typename = // a little bit of cheating
         std::_RequireInputIter<InputIt>> 
-        iterator insert( const_iterator pos,InputIt first, InputIt last);
+        iterator insert( const_iterator pos, InputIt first, InputIt last);
     iterator insert( const_iterator pos, std::initializer_list<T> ilist);
 
     iterator erase( iterator pos);
@@ -90,5 +90,40 @@ public:
     // Destructor
     ~Vector();
 };
+
+// ambiguity with overload !!!
+// inserts elements from range [first, last) before pos
+// According to cppref the behavior is undefined if first and last are iterators into *this
+// STL vector throw except if len < 0
+template <class T, class Allocator> 
+template <class InputIt, typename> 
+typename Vector<T, Allocator>::iterator Vector<T, Allocator>::insert( 
+        Vector::const_iterator pos, InputIt first, InputIt last)
+{
+    Vector temp(*this);
+    std::ptrdiff_t len = last - first;
+    if (len < 0 || len > max_size())
+        throw std::length_error("vector::_M_range_insert");
+
+    auto it = this->begin();
+    if (_size + len >= _cap - 1)
+        reallocate(0, _size + len + 1);
+
+    Vector::difference_type i = 0, j = 0;
+
+    for (; it < pos; ++i, ++it)
+        Vector::alloc_traits::construct(_alloc, _data + i, temp._data[i]);
+
+    Vector::iterator ret(_data + i + j);
+
+    for (; j < len; ++j, ++first)
+        Vector::alloc_traits::construct(_alloc, _data + i + j, *first);
+
+    for (; i < temp.size() + 1; i++)
+        Vector::alloc_traits::construct(_alloc, _data + i + j, temp._data[i - 1]);
+
+    _size += len;
+    return ret;
+}
 
 #endif
