@@ -261,11 +261,6 @@ typename Vector<T, Allocator>::iterator Vector<T, Allocator>::insert(
     return ret;
 }
 
-/*
-    iterator erase( iterator pos);
-    iterator erase( iterator first, iterator last);
-    */
-
 template <class T, class Allocator>
 typename Vector<T, Allocator>::iterator Vector<T, Allocator>::erase( 
         typename Vector<T, Allocator>::iterator pos)
@@ -337,10 +332,8 @@ void Vector<T, Allocator>::resize( Vector::size_type count, T value)
 template <class T, class Allocator>
 inline void Vector<T, Allocator>::swap( Vector& other)
 {
-    Vector other_temp = other;
-    Vector this_temp = *this;
-
-    other = std::move(this_temp);
+    Vector other_temp (std::move(other));
+    other = std::move(*this);
     *this = std::move(other_temp);
 }
 
